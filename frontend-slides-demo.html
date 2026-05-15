@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frontend Slides — Skill Demo</title>
+
+  <!-- Fonts: Syne (display) + Space Mono (mono accents) — Creative Voltage preset -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ===========================================
+       CSS CUSTOM PROPERTIES — Creative Voltage Theme
+       Change these to restyle the whole presentation
+       =========================================== */
+    :root {
+      /* Colors */
+      --bg-primary:   #0066ff;
+      --bg-dark:      #1a1a2e;
+      --accent-neon:  #d4ff00;
+      --text-light:   #ffffff;
+      --text-dim:     rgba(255,255,255,0.65);
+      --text-dark:    #1a1a2e;
+      --halftone:     rgba(0,0,0,0.08);
+
+      /* Typography */
+      --font-display: 'Syne', sans-serif;
+      --font-mono:    'Space Mono', monospace;
+
+      /* Sizing — all clamp() for full responsiveness */
+      --title-size:    clamp(2.5rem, 7vw, 6rem);
+      --h2-size:       clamp(1.5rem, 4vw, 3.2rem);
+      --h3-size:       clamp(1rem, 2.5vw, 1.6rem);
+      --body-size:     clamp(0.75rem, 1.5vw, 1.1rem);
+      --small-size:    clamp(0.6rem, 1vw, 0.85rem);
+      --label-size:    clamp(0.55rem, 0.9vw, 0.75rem);
+      --slide-padding: clamp(1.5rem, 5vw, 5rem);
+      --content-gap:   clamp(0.75rem, 2vw, 2rem);
+      --element-gap:   clamp(0.4rem, 1vw, 1rem);
+
+      /* Animation */
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --duration:      0.65s;
+    }
+
+    /* ===========================================
+       RESET
+       =========================================== */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* ===========================================
+       VIEWPORT FITTING: MANDATORY BASE STYLES
+       (viewport-base.css — included in full)
+       =========================================== */
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    html {
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+    }
+
+    .slide {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .slide-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-height: 100%;
+      overflow: hidden;
+      padding: var(--slide-padding);
+    }
+
+    .card, .container, .content-box {
+      max-width: min(90vw, 1000px);
+      max-height: min(80vh, 700px);
+    }
+
+    .feature-list, .bullet-list {
+      gap: clamp(0.4rem, 1vh, 1rem);
+    }
+
+    .feature-list li, .bullet-list li {
+      font-size: var(--body-size);
+      line-height: 1.4;
+    }
+
+    img, .image-container {
+      max-width: 100%;
+      max-height: min(50vh, 400px);
+      object-fit: contain;
+    }
+
+    @media (max-height: 700px) {
+      :root {
+        --slide-padding: clamp(0.75rem, 3vw, 2rem);
+        --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+        --title-size: clamp(1.5rem, 5vw, 3rem);
+        --h2-size: clamp(1rem, 3vw, 1.75rem);
+      }
+    }
+
+    @media (max-height: 600px) {
+      :root {
+        --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+        --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+        --title-size: clamp(1.1rem, 4vw, 2rem);
+        --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+      }
+
+      .nav-dots, .keyboard-hint, .decorative {
+        display: none;
+      }
+    }
+
+    @media (max-height: 500px) {
+      :root {
+        --slide-padding: clamp(0.4rem, 2vw, 1rem);
+        --title-size: clamp(1rem, 3.5vw, 1.5rem);
+        --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+        --body-size: clamp(0.65rem, 1vw, 0.85rem);
+      }
+    }
+
+    @media (max-width: 600px) {
+      :root {
+        --title-size: clamp(1.5rem, 9vw, 3rem);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+      }
+
+      html {
+        scroll-behavior: auto;
+      }
+    }
+
+    /* ===========================================
+       GLOBAL BASE
+       =========================================== */
+    body {
+      font-family: var(--font-display);
+      color: var(--text-light);
+      background: var(--bg-dark);
+    }
+
+    /* ===========================================
+       ANIMATIONS — Fade + Slide Up (staggered)
+       =========================================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(36px);
+      transition:
+        opacity var(--duration) var(--ease-out-expo),
+        transform var(--duration) var(--ease-out-expo);
+    }
+
+    .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+
+    .reveal:nth-child(1) { transition-delay: 0.05s; }
+    .reveal:nth-child(2) { transition-delay: 0.18s; }
+    .reveal:nth-child(3) { transition-delay: 0.3s; }
+    .reveal:nth-child(4) { transition-delay: 0.42s; }
+    .reveal:nth-child(5) { transition-delay: 0.54s; }
+
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-48px);
+      transition:
+        opacity var(--duration) var(--ease-out-expo),
+        transform var(--duration) var(--ease-out-expo);
+    }
+
+    .slide.visible .reveal-left { opacity: 1; transform: translateX(0); }
+    .reveal-left:nth-child(1) { transition-delay: 0.1s; }
+    .reveal-left:nth-child(2) { transition-delay: 0.25s; }
+    .reveal-left:nth-child(3) { transition-delay: 0.4s; }
+
+    /* ===========================================
+       HALFTONE TEXTURE PATTERN
+       Creative Voltage signature element
+       =========================================== */
+    .halftone-bg {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, var(--halftone) 1px, transparent 1px);
+      background-size: 20px 20px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ===========================================
+       PROGRESS BAR
+       =========================================== */
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: var(--accent-neon);
+      width: 0%;
+      z-index: 1000;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 8px var(--accent-neon);
+    }
+
+    /* ===========================================
+       NAVIGATION DOTS
+       =========================================== */
+    .nav-dots {
+      position: fixed;
+      right: clamp(1rem, 2.5vw, 2rem);
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: clamp(6px, 1vh, 12px);
+      z-index: 100;
+    }
+
+    .nav-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      cursor: pointer;
+      border: none;
+      padding: 0;
+      transition: all 0.3s ease;
+    }
+
+    .nav-dot.active {
+      background: var(--accent-neon);
+      box-shadow: 0 0 8px var(--accent-neon);
+      transform: scale(1.3);
+    }
+
+    /* ===========================================
+       SLIDE 1 — TITLE SLIDE
+       Split panel: blue left / dark right
+       =========================================== */
+    .slide-title {
+      flex-direction: row;
+      background: var(--bg-dark);
+    }
+
+    .title-left {
+      width: 55%;
+      background: var(--bg-primary);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--slide-padding);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .title-left .halftone-bg {
+      --halftone: rgba(0,0,0,0.1);
+    }
+
+    /* Decorative circle in bottom-right of left panel */
+    .title-left::after {
+      content: '';
+      position: absolute;
+      bottom: calc(-1 * clamp(60px, 12vw, 140px));
+      right: calc(-1 * clamp(60px, 12vw, 140px));
+      width: clamp(120px, 24vw, 280px);
+      height: clamp(120px, 24vw, 280px);
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.2);
+      pointer-events: none;
+    }
+
+    .title-eyebrow {
+      font-family: var(--font-mono);
+      font-size: var(--label-size);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-neon);
+      margin-bottom: var(--element-gap);
+      position: relative;
+      z-index: 1;
+    }
+
+    .title-main {
+      font-family: var(--font-display);
+      font-size: var(--title-size);
+      font-weight: 800;
+      line-height: 0.92;
+      color: var(--text-light);
+      position: relative;
+      z-index: 1;
+    }
+
+    .title-main span {
+      display: block;
+      color: var(--accent-neon);
+    }
+
+    .title-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--slide-padding);
+      gap: var(--content-gap);
+      position: relative;
+    }
+
+    .slide-number {
+      position: absolute;
+      top: var(--slide-padding);
+      right: var(--slide-padding);
+      font-family: var(--font-mono);
+      font-size: var(--label-size);
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+
+    .title-tagline {
+      font-family: var(--font-display);
+      font-size: var(--h3-size);
+      font-weight: 700;
+      color: var(--text-light);
+      line-height: 1.25;
+    }
+
+    .title-desc {
+      font-family: var(--font-display);
+      font-size: var(--body-size);
+      color: var(--text-dim);
+      line-height: 1.7;
+      max-width: 36ch;
+    }
+
+    /* Neon badge — Creative Voltage signature */
+    .neon-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5em;
+      font-family: var(--font-mono);
+      font-size: var(--small-size);
+      color: var(--bg-dark);
+      background: var(--accent-neon);
+      padding: 0.35em 0.9em;
+      border-radius: 2px;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      text-transform: uppercase;
+      width: fit-content;
+    }
+
+    /* ===========================================
+       SLIDE 2 — FEATURES GRID
+       Dark bg with 3 feature cards
+       =========================================== */
+    .slide-features {
+      background: var(--bg-dark);
+      position: relative;
+    }
+
+    .slide-features .slide-content {
+      gap: var(--content-gap);
+      justify-content: center;
+    }
+
+    .features-header {
+      display: flex;
+      flex-direction: column;
+      gap: var(--element-gap);
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: var(--label-size);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-neon);
+    }
+
+    .features-title {
+      font-family: var(--font-display);
+      font-size: var(--h2-size);
+      font-weight: 800;
+      color: var(--text-light);
+      line-height: 1.05;
+    }
+
+    /* Three feature cards in a row */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(0.75rem, 2vw, 1.5rem);
+    }
+
+    @media (max-width: 700px) {
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .feature-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 4px;
+      padding: clamp(1rem, 2.5vw, 1.75rem);
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.5rem, 1vw, 0.85rem);
+      transition: border-color 0.3s ease, background 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(212, 255, 0, 0.35);
+      background: rgba(255,255,255,0.07);
+    }
+
+    /* Accent top bar on each card */
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent-neon);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .feature-card:hover::before { opacity: 1; }
+
+    .card-num {
+      font-family: var(--font-mono);
+      font-size: var(--label-size);
+      color: var(--accent-neon);
+      letter-spacing: 0.1em;
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: var(--h3-size);
+      font-weight: 700;
+      color: var(--text-light);
+      line-height: 1.2;
+    }
+
+    .card-desc {
+      font-family: var(--font-display);
+      font-size: var(--body-size);
+      color: var(--text-dim);
+      line-height: 1.65;
+    }
+
+    /* stagger cards individually */
+    .feature-card:nth-child(1) { transition-delay: 0.15s; }
+    .feature-card:nth-child(2) { transition-delay: 0.3s; }
+    .feature-card:nth-child(3) { transition-delay: 0.45s; }
+
+    .slide.visible .feature-card {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .feature-card {
+      opacity: 0;
+      transform: translateY(30px);
+      transition:
+        opacity var(--duration) var(--ease-out-expo),
+        transform var(--duration) var(--ease-out-expo),
+        border-color 0.3s ease,
+        background 0.3s ease;
+    }
+
+    /* ===========================================
+       SLIDE 3 — CLOSING / CTA
+       Blue bg, centered, neon accent
+       =========================================== */
+    .slide-closing {
+      background: var(--bg-primary);
+      position: relative;
+    }
+
+    .slide-closing .halftone-bg {
+      --halftone: rgba(0,0,0,0.12);
+    }
+
+    .closing-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: var(--content-gap);
+      padding: var(--slide-padding);
+    }
+
+    /* Large decorative circle behind text */
+    .closing-ring {
+      position: absolute;
+      width: clamp(240px, 50vw, 500px);
+      height: clamp(240px, 50vw, 500px);
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.12);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .closing-ring.inner {
+      width: clamp(160px, 33vw, 340px);
+      height: clamp(160px, 33vw, 340px);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .closing-eyebrow {
+      font-family: var(--font-mono);
+      font-size: var(--label-size);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .closing-title {
+      font-family: var(--font-display);
+      font-size: var(--title-size);
+      font-weight: 800;
+      line-height: 0.95;
+      color: var(--text-light);
+    }
+
+    .closing-title .highlight {
+      color: var(--accent-neon);
+      display: block;
+    }
+
+    .closing-sub {
+      font-family: var(--font-display);
+      font-size: var(--body-size);
+      color: rgba(255,255,255,0.75);
+      max-width: 40ch;
+      line-height: 1.65;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: clamp(0.75rem, 2vw, 1.25rem);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      font-family: var(--font-mono);
+      font-size: var(--small-size);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--bg-dark);
+      background: var(--accent-neon);
+      border: none;
+      padding: 0.75em 2em;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 0 20px rgba(212,255,0,0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(212,255,0,0.5);
+    }
+
+    .btn-ghost {
+      font-family: var(--font-mono);
+      font-size: var(--small-size);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-light);
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.35);
+      padding: 0.75em 2em;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--text-light);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .slide-count-closing {
+      position: absolute;
+      bottom: var(--slide-padding);
+      right: var(--slide-padding);
+      font-family: var(--font-mono);
+      font-size: var(--label-size);
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.1em;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- === PROGRESS BAR === -->
+  <div class="progress-bar" id="progressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+  <!-- === NAV DOTS — populated by JS === -->
+  <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+  <!-- ===================================================
+       SLIDE 1 — TITLE
+       Split panel: blue left / dark right
+       =================================================== -->
+  <section class="slide slide-title" id="slide-0" aria-label="Title slide">
+
+    <!-- LEFT PANEL: Brand + title -->
+    <div class="title-left">
+      <div class="halftone-bg" aria-hidden="true"></div>
+      <p class="title-eyebrow reveal">Skill Demo · 2025</p>
+      <h1 class="title-main reveal">
+        FRONTEND
+        <span>SLIDES</span>
+      </h1>
+    </div>
+
+    <!-- RIGHT PANEL: Tagline + description -->
+    <div class="title-right">
+      <span class="slide-number">01 / 03</span>
+      <span class="neon-badge reveal">Zero Dependencies</span>
+      <h2 class="title-tagline reveal">Stunning HTML<br>presentations,<br>instantly.</h2>
+      <p class="title-desc reveal">
+        A Claude Code skill that generates animation‑rich, single‑file slide decks — no npm, no build tools, no design experience required.
+      </p>
+    </div>
+
+  </section>
+
+  <!-- ===================================================
+       SLIDE 2 — FEATURES
+       3 cards on dark background
+       =================================================== -->
+  <section class="slide slide-features" id="slide-1" aria-label="Features slide">
+    <div class="halftone-bg" aria-hidden="true"></div>
+
+    <div class="slide-content">
+      <div class="features-header">
+        <span class="section-label reveal">What it does</span>
+        <h2 class="features-title reveal">Three superpowers<br>in one skill.</h2>
+      </div>
+
+      <!-- Feature cards -->
+      <div class="features-grid" role="list">
+
+        <article class="feature-card" role="listitem">
+          <span class="card-num">01</span>
+          <h3 class="card-title">Show, Don't Tell</h3>
+          <p class="card-desc">
+            Generates three live style previews so you pick what you like visually — no abstract design jargon needed.
+          </p>
+        </article>
+
+        <article class="feature-card" role="listitem">
+          <span class="card-num">02</span>
+          <h3 class="card-title">12 Curated Themes</h3>
+          <p class="card-desc">
+            From dark cyberpunk to warm editorial — each preset is inspired by real design references, never generic AI aesthetics.
+          </p>
+        </article>
+
+        <article class="feature-card" role="listitem">
+          <span class="card-num">03</span>
+          <h3 class="card-title">PPT → Web</h3>
+          <p class="card-desc">
+            Drop a .pptx file and get a polished interactive web presentation with smooth animations and keyboard navigation.
+          </p>
+        </article>
+
+      </div>
+    </div>
+
+    <span class="slide-count-closing" style="position:absolute;bottom:var(--slide-padding);right:var(--slide-padding);font-family:var(--font-mono);font-size:var(--label-size);color:var(--text-dim);letter-spacing:0.1em;">02 / 03</span>
+
+  </section>
+
+  <!-- ===================================================
+       SLIDE 3 — CLOSING / CTA
+       Blue bg, centered, neon accent
+       =================================================== -->
+  <section class="slide slide-closing" id="slide-2" aria-label="Closing slide">
+
+    <div class="halftone-bg" aria-hidden="true"></div>
+
+    <!-- Decorative rings — pure CSS, no SVG/image dependencies -->
+    <div class="closing-ring" aria-hidden="true"></div>
+    <div class="closing-ring inner" aria-hidden="true"></div>
+
+    <div class="closing-content slide-content">
+      <span class="closing-eyebrow reveal">Ready to create</span>
+      <h2 class="closing-title reveal">
+        YOUR DECK
+        <span class="highlight">AWAITS.</span>
+      </h2>
+      <p class="closing-sub reveal">
+        Type <code>/frontend-slides</code> to start. Describe your topic, pick a vibe, and get a production‑ready HTML presentation in minutes.
+      </p>
+      <div class="cta-row reveal">
+        <button class="btn-primary" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Back to Start</button>
+        <button class="btn-ghost" onclick="alert('Use /frontend-slides in Claude Code!')">Get the Skill</button>
+      </div>
+    </div>
+
+    <span class="slide-count-closing">03 / 03</span>
+
+  </section>
+
+  <script>
+    /* ===========================================
+       SLIDE PRESENTATION CONTROLLER
+       Handles: keyboard nav, touch/swipe, scroll,
+       intersection observer, progress bar, nav dots
+       =========================================== */
+    class SlidePresentation {
+      constructor() {
+        this.slides       = Array.from(document.querySelectorAll('.slide'));
+        this.progressBar  = document.getElementById('progressBar');
+        this.navDotsEl    = document.getElementById('navDots');
+        this.currentIndex = 0;
+        this.isScrolling  = false;
+
+        this.setupNavDots();
+        this.setupIntersectionObserver();
+        this.setupKeyboardNav();
+        this.setupWheelNav();
+        this.setupTouchNav();
+      }
+
+      /* --- NAV DOTS --- */
+      setupNavDots() {
+        // Always clear before building to prevent duplicates on re-open
+        this.navDotsEl.innerHTML = '';
+        this.slides.forEach((_, i) => {
+          const btn = document.createElement('button');
+          btn.className = 'nav-dot' + (i === 0 ? ' active' : '');
+          btn.setAttribute('aria-label', `Go to slide ${i + 1}`);
+          btn.addEventListener('click', () => this.goTo(i));
+          this.navDotsEl.appendChild(btn);
+        });
+      }
+
+      updateNavDots(index) {
+        this.navDotsEl.querySelectorAll('.nav-dot').forEach((dot, i) => {
+          dot.classList.toggle('active', i === index);
+        });
+      }
+
+      /* --- PROGRESS BAR --- */
+      updateProgress(index) {
+        const pct = ((index + 1) / this.slides.length) * 100;
+        this.progressBar.style.width = pct + '%';
+        this.progressBar.setAttribute('aria-valuenow', Math.round(pct));
+      }
+
+      /* --- INTERSECTION OBSERVER: triggers .visible for CSS animations --- */
+      setupIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              const idx = this.slides.indexOf(entry.target);
+              if (idx !== -1) {
+                this.currentIndex = idx;
+                this.updateNavDots(idx);
+                this.updateProgress(idx);
+              }
+            }
+          });
+        }, { threshold: 0.5 });
+
+        this.slides.forEach(slide => observer.observe(slide));
+      }
+
+      /* --- NAVIGATION HELPERS --- */
+      goTo(index) {
+        const target = this.slides[index];
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      next() { if (this.currentIndex < this.slides.length - 1) this.goTo(this.currentIndex + 1); }
+      prev() { if (this.currentIndex > 0) this.goTo(this.currentIndex - 1); }
+
+      /* --- KEYBOARD: arrow keys, space, page up/down --- */
+      setupKeyboardNav() {
+        document.addEventListener('keydown', e => {
+          if (['ArrowDown', 'ArrowRight', ' ', 'PageDown'].includes(e.key)) {
+            e.preventDefault();
+            this.next();
+          } else if (['ArrowUp', 'ArrowLeft', 'PageUp'].includes(e.key)) {
+            e.preventDefault();
+            this.prev();
+          }
+        });
+      }
+
+      /* --- MOUSE WHEEL: throttled to one slide per gesture --- */
+      setupWheelNav() {
+        document.addEventListener('wheel', e => {
+          e.preventDefault();
+          if (this.isScrolling) return;
+          this.isScrolling = true;
+          if (e.deltaY > 0) this.next(); else this.prev();
+          setTimeout(() => { this.isScrolling = false; }, 800);
+        }, { passive: false });
+      }
+
+      /* --- TOUCH / SWIPE --- */
+      setupTouchNav() {
+        let startY = 0;
+        document.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+        document.addEventListener('touchend', e => {
+          const delta = startY - e.changedTouches[0].clientY;
+          if (Math.abs(delta) > 50) {
+            if (delta > 0) this.next(); else this.prev();
+          }
+        }, { passive: true });
+      }
+    }
+
+    // Boot the controller once DOM is ready
+    new SlidePresentation();
+  </script>
+</body>
+</html>
